@@ -11,8 +11,9 @@ export function parseCommand(argv: string[]): ParsedCommand {
   const [resource, second, ...rest] = argv;
   const args: string[] = [];
   const options: Options = {};
-  const command = second?.startsWith("--") ? undefined : second;
-  const optionArgs = second?.startsWith("--") ? [second, ...rest] : rest;
+  const helpRequested = second === "help" || second === "-h" || second === "--help";
+  const command = helpRequested ? "help" : second?.startsWith("--") ? undefined : second;
+  const optionArgs = helpRequested ? [] : second?.startsWith("--") ? [second, ...rest] : rest;
 
   for (let index = 0; index < optionArgs.length; index += 1) {
     const value = optionArgs[index];

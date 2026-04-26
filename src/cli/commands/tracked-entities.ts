@@ -1,12 +1,18 @@
 import type { TrackedEntity } from "../../domain/index.js";
 import type { DomainStorage } from "../../storage/index.js";
-import { deleteById, printJson, requiredOption } from "../helpers.js";
+import { deleteById, isHelpCommand, printJson, requiredOption } from "../helpers.js";
+import { printCommandHelp } from "./help.js";
 import type { ParsedCommand } from "../parser.js";
 
 export async function handleTrackedEntities(
   command: ParsedCommand,
   storage: DomainStorage,
 ): Promise<void> {
+  if (command.command === undefined || isHelpCommand(command.command)) {
+    printCommandHelp("tracked-entities");
+    return;
+  }
+
   switch (command.command) {
     case "list":
       printJson(await storage.trackedEntities.list());

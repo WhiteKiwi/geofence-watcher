@@ -1,12 +1,18 @@
 import type { Geofence } from "../../domain/index.js";
 import type { DomainStorage } from "../../storage/index.js";
-import { deleteById, printJson, requiredNumberOption, requiredOption } from "../helpers.js";
+import { deleteById, isHelpCommand, printJson, requiredNumberOption, requiredOption } from "../helpers.js";
+import { printCommandHelp } from "./help.js";
 import type { ParsedCommand } from "../parser.js";
 
 export async function handleGeofences(
   command: ParsedCommand,
   storage: DomainStorage,
 ): Promise<void> {
+  if (command.command === undefined || isHelpCommand(command.command)) {
+    printCommandHelp("geofences");
+    return;
+  }
+
   switch (command.command) {
     case "list":
       printJson(await storage.geofences.list());

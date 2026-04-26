@@ -4,7 +4,8 @@ import { join } from "node:path";
 import { spawnSync } from "node:child_process";
 
 import type { DomainStorage } from "../../storage/index.js";
-import { printJson, requiredOption } from "../helpers.js";
+import { isHelpCommand, printJson, requiredOption } from "../helpers.js";
+import { printCommandHelp } from "./help.js";
 import type { ParsedCommand } from "../parser.js";
 
 type InstallCronResult = {
@@ -22,6 +23,11 @@ export async function handleInstallCron(
   _storage: DomainStorage,
 ): Promise<void> {
   void _storage;
+
+  if (isHelpCommand(command.command)) {
+    printCommandHelp("install-cron");
+    return;
+  }
 
   const every = requiredOption(command.options, "every");
   const everySeconds = parseEveryToSeconds(every);

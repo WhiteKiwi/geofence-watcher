@@ -1,6 +1,7 @@
 import type { Action } from "../../domain/index.js";
 import type { DomainStorage } from "../../storage/index.js";
-import { deleteById, printJson, requiredOption } from "../helpers.js";
+import { deleteById, isHelpCommand, printJson, requiredOption } from "../helpers.js";
+import { printCommandHelp } from "./help.js";
 import type { ParsedCommand } from "../parser.js";
 import { executeShellAction } from "../../runtime/execute-shell-action.js";
 
@@ -8,6 +9,11 @@ export async function handleActions(
   command: ParsedCommand,
   storage: DomainStorage,
 ): Promise<void> {
+  if (command.command === undefined || isHelpCommand(command.command)) {
+    printCommandHelp("actions");
+    return;
+  }
+
   switch (command.command) {
     case "list":
       printJson(await storage.actions.list());

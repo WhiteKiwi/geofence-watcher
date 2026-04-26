@@ -1,5 +1,9 @@
 import type { Options } from "./parser.js";
 
+export function isHelpCommand(command: string | undefined): boolean {
+  return command === "help";
+}
+
 export function requiredOption(options: Options, name: string): string {
   const value = options[name];
 
