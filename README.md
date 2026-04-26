@@ -112,4 +112,4 @@ The CLI is exposed through package scripts and should support subcommands throug
 ### Runtime Commands
 
 - `geofence-watcher watch`: Fetch tracked entity locations, save tracked entity state, evaluate geofence rules, run matched actions, and update runtime state.
-- `geofence-watcher install-cron --every 5m`: Install a scheduled job that runs `geofence-watcher watch` every 5 minutes.
+- `geofence-watcher install-cron --every 5m`: Install a macOS `launchd` job that writes a plist under `~/Library/LaunchAgents`, resolves the `geofence-watcher` executable path at install time, and runs `geofence-watcher watch` on the requested interval.
