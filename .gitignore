@@ -17,6 +17,7 @@ pnpm-debug.log*
 .npm/
 .yarn/
 .pnpm-store/
+pnpm-lock.yaml.~
 
 # Build output
 dist/
@@ -25,11 +26,17 @@ coverage/
 .next/
 .nuxt/
 .svelte-kit/
+.tsbuildinfo
+
+# Tooling cache
+.eslintcache
 
 # Local environment
 .env
 .env.*
 !.env.example
+!.env.sample
 
 # Local data
 .data/
+.cache/
