@@ -1,0 +1,11 @@
+export { buildTrackedEntityState } from "./build-tracked-entity-state.js";
+export { diffTrackedEntityState } from "./diff-tracked-entity-state.js";
+export { evaluateGeofenceRules } from "./evaluate-geofence-rules.js";
+export { executeShellAction } from "./execute-shell-action.js";
+export { processTrackedEntity } from "./process-tracked-entity.js";
+export { runWatch } from "./watch.js";
+export type { ProcessTrackedEntityResult } from "./process-tracked-entity.js";
+export type { TrackedEntityStateDiff } from "./diff-tracked-entity-state.js";
+export type { GeofenceRuleMatch } from "./evaluate-geofence-rules.js";
+export type { ExecuteShellActionResult } from "./execute-shell-action.js";
+export type { WatchResult } from "./watch.js";

@@ -1,0 +1,32 @@
+{
+  "name": "geofence-watcher",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.33.0",
+  "bin": {
+    "geofence-watcher": "./dist/cli/main.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/cli/main.ts",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^24.12.2",
+    "eslint": "^10.2.1",
+    "globals": "^17.5.0",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.59.0"
+  },
+  "dependencies": {
+    "zod": "^4.3.6"
+  }
+}
