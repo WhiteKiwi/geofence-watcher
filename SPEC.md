@@ -41,7 +41,7 @@ The project needs a small command-line tool that:
 
 For `type: beacon`:
 
-- `value.apiKey`: Beacon server API key.
+- `value.apiSecret`: Beacon server API secret.
 - `value.apiUrl`: Beacon server API URL.
 - `value.id`: Beacon server id used to fetch the latest location.
 

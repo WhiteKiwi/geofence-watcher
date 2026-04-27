@@ -10,7 +10,7 @@ export async function fetchLatestBeaconLocation(
   const url = resolveBeaconLatestLocationUrl(beacon.apiUrl, beacon.id);
   const response = await fetch(url, {
     headers: {
-      Authorization: `Bearer ${beacon.apiKey}`,
+      Authorization: `Bearer ${beacon.apiSecret}`,
     },
   });
 

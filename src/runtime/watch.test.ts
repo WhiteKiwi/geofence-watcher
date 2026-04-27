@@ -68,7 +68,7 @@ test("runWatch continues when one tracked entity fetch fails", async () => {
       type: "beacon",
       value: {
         apiUrl: "https://example.com/latest",
-        apiKey: "key",
+        apiSecret: "secret",
         id: "beacon-1",
       },
     },
@@ -78,7 +78,7 @@ test("runWatch continues when one tracked entity fetch fails", async () => {
       type: "beacon",
       value: {
         apiUrl: "https://example.com/fail",
-        apiKey: "key",
+        apiSecret: "secret",
         id: "beacon-2",
       },
     },
@@ -166,7 +166,7 @@ test("runWatch emits debug logs only when enabled", async () => {
       type: "beacon",
       value: {
         apiUrl: "https://example.com/latest",
-        apiKey: "key",
+        apiSecret: "secret",
         id: "beacon-1",
       },
     },

@@ -37,6 +37,11 @@ The implementation is split into three layers:
 - `src/runtime/evaluate-geofence-rules.ts` evaluates geofence transitions.
 - `src/runtime/execute-shell-action.ts` runs shell actions.
 
+### Beacon Credential Naming
+
+- Use `apiSecret` as the canonical field name for Beacon credentials.
+- Expose `--api-secret` in the CLI and usage text.
+
 ## Execution Flow
 
 1. Load all tracked entities, states, locations, geofences, rules, and actions.
@@ -113,6 +118,7 @@ The debug logger work is implemented as a small CLI/runtime add-on.
   - Provide a minimal debug logger.
 - `src/cli/commands/help.ts`
   - Document `--debug` in usage text.
+  - Use `--api-secret` in Beacon tracked entity examples.
 - `src/runtime/watch.ts`
   - Log collection loading, per-entity processing, rule matches, and persistence.
 - `src/runtime/process-tracked-entity.ts`

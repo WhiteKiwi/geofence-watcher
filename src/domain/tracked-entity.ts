@@ -1,10 +1,13 @@
 import { z } from "zod";
 
-export const BeaconTrackedEntityValue = z.object({
-  apiKey: z.string(),
-  apiUrl: z.string(),
-  id: z.string(),
-});
+const BeaconTrackedEntityValueInput = z
+  .object({
+    apiSecret: z.string(),
+    apiUrl: z.string(),
+    id: z.string(),
+  });
+
+export const BeaconTrackedEntityValue = BeaconTrackedEntityValueInput;
 
 export type BeaconTrackedEntityValue = z.infer<typeof BeaconTrackedEntityValue>;
 

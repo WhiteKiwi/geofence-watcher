@@ -24,7 +24,7 @@ export async function handleTrackedEntities(
         type: "beacon",
         value: {
           apiUrl: requiredOption(command.options, "api-url"),
-          apiKey: requiredOption(command.options, "api-key"),
+          apiSecret: requiredOption(command.options, "api-secret"),
           id: requiredOption(command.options, "beacon-id"),
         },
       };

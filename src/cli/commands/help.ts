@@ -22,7 +22,7 @@ export function printHelp(): void {
   geofence-watcher install-cron --help
 
   geofence-watcher tracked-entities list
-  geofence-watcher tracked-entities add-beacon --id <id> --name <name> --api-url <apiUrl> --api-key <apiKey> --beacon-id <beaconId>
+  geofence-watcher tracked-entities add-beacon --id <id> --name <name> --api-url <apiUrl> --api-secret <apiSecret> --beacon-id <beaconId>
   geofence-watcher tracked-entities delete <id>
 
   geofence-watcher tracked-entity-states list
@@ -53,7 +53,7 @@ export function printCommandHelp(resource: HelpResource): void {
     case "tracked-entities":
       console.log(`Usage:
   geofence-watcher tracked-entities list
-  geofence-watcher tracked-entities add-beacon --id <id> --name <name> --api-url <apiUrl> --api-key <apiKey> --beacon-id <beaconId>
+  geofence-watcher tracked-entities add-beacon --id <id> --name <name> --api-url <apiUrl> --api-secret <apiSecret> --beacon-id <beaconId>
   geofence-watcher tracked-entities delete <id>`);
       return;
     case "tracked-entity-states":
