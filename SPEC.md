@@ -164,3 +164,38 @@ The tool must expose these command groups:
 - Matching rules trigger the correct actions.
 - Hysteresis prevents rapid boundary flapping from repeatedly firing rules.
 - The tool works with local persisted data only.
+
+## Debug Logging Addendum
+
+This task adds a small debug logger to the CLI.
+
+### Problem Statement
+
+The CLI needs diagnostic logging that is silent by default and only appears when the user passes `--debug`.
+
+### Goals
+
+- Add a reusable logger for diagnostic messages.
+- Keep normal command output unchanged.
+- Emit debug logs only when `--debug` is present.
+- Ensure debug output does not corrupt JSON written to `stdout`.
+
+### Scope
+
+- Parse `--debug` as a global CLI flag.
+- Add a logger helper that writes debug messages to `stderr`.
+- Add debug logs to the watch/runtime path where they help explain progress.
+- Mention `--debug` in help text.
+
+### Non-Goals
+
+- No file-based logging.
+- No log rotation or persistence.
+- No full logging framework.
+
+### Acceptance Criteria
+
+- Running any command without `--debug` produces no debug logs.
+- Running with `--debug` prints diagnostic logs.
+- JSON output remains on `stdout` and stays valid.
+- The logger is reusable by multiple runtime modules.

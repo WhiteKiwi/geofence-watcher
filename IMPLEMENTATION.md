@@ -87,3 +87,75 @@ Use the standard project checks:
 - `pnpm build`
 
 For runtime behavior, add or update focused tests under `src/runtime/*.test.ts` and `src/cli/*.test.ts` when behavior changes.
+
+## Debug Logging Plan
+
+The debug logger work is implemented as a small CLI/runtime add-on.
+
+### Technical Approach
+
+- Parse `--debug` as a boolean flag in `src/cli/parser.ts`.
+- Set a shared debug state once in `src/cli/main.ts`.
+- Add `src/cli/logger.ts` with `setDebugEnabled()` and `debug()`.
+- Make `debug()` write only to `stderr`.
+- Add log calls in `src/runtime/watch.ts`, `src/runtime/process-tracked-entity.ts`, and `src/runtime/execute-shell-action.ts`.
+- Keep normal JSON output on `stdout` untouched.
+
+### File-Level Changes
+
+- `src/cli/parser.ts`
+  - Recognize `--debug` as a flag instead of a key-value option.
+- `src/cli/helpers.ts`
+  - Treat boolean options correctly when validating required string options.
+- `src/cli/main.ts`
+  - Enable or disable debug logging before command dispatch.
+- `src/cli/logger.ts`
+  - Provide a minimal debug logger.
+- `src/cli/commands/help.ts`
+  - Document `--debug` in usage text.
+- `src/runtime/watch.ts`
+  - Log collection loading, per-entity processing, rule matches, and persistence.
+- `src/runtime/process-tracked-entity.ts`
+  - Log adapter fetch lifecycle.
+- `src/runtime/execute-shell-action.ts`
+  - Log shell command execution before spawn.
+- Tests
+  - Add parser coverage for `--debug`.
+  - Add logger coverage for enabled vs disabled behavior.
+  - Add runtime coverage proving debug logs are silent unless enabled.
+
+### Debug Log Coverage
+
+When `--debug` is enabled, emit logs for the following milestones:
+
+- CLI startup:
+  - When the CLI starts handling a command.
+  - Whether debug logging is enabled.
+  - Which top-level command is being dispatched.
+- Watch run:
+  - When `watch` starts and finishes.
+  - How many tracked entities, states, locations, geofences, rules, and actions were loaded.
+  - Which tracked entity is being processed.
+  - Whether processing succeeded or failed for each tracked entity.
+  - How the tracked entity state changed, including previous and next state summaries.
+  - How many rules matched for that tracked entity.
+  - Which rule conditions were evaluated and whether each one triggered.
+  - How many actions were selected for execution.
+  - Which shell action is about to run.
+  - Whether each triggered action succeeded or failed.
+  - When tracked entity state is being saved.
+- Tracked entity processing:
+  - When the latest location fetch starts.
+  - When the latest location fetch completes.
+- Shell action execution:
+  - Which shell is being spawned.
+  - Which action id is being executed.
+  - The shell action result, including success, exit code, and error if present.
+  - Shell command output is not captured into the logger; it continues to flow through the spawned process stdio.
+
+### Verification
+
+- Confirm `pnpm typecheck` passes.
+- Confirm `pnpm build` passes.
+- Confirm debug logs appear only when `--debug` is present.
+- Confirm stdout JSON remains unchanged when debug logging is enabled.
