@@ -6,7 +6,6 @@ export type GeofenceTriggerEventType = z.infer<typeof GeofenceTriggerEventType>;
 
 export const GeofenceRuleTrigger = z.object({
   eventType: GeofenceTriggerEventType,
-  hysteresisMeters: z.number(),
 });
 
 export type GeofenceRuleTrigger = z.infer<typeof GeofenceRuleTrigger>;

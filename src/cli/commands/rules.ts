@@ -5,7 +5,6 @@ import {
   isHelpCommand,
   printJson,
   requiredEventType,
-  requiredNumberOption,
   requiredOption,
 } from "../helpers.js";
 import { printCommandHelp } from "./help.js";
@@ -34,7 +33,6 @@ export async function handleRules(
         actionId,
         trigger: {
           eventType,
-          hysteresisMeters: requiredNumberOption(command.options, "hysteresis-meters"),
         },
       };
 

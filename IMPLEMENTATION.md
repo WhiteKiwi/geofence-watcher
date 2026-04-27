@@ -34,7 +34,7 @@ The implementation is split into three layers:
 - `src/runtime/process-tracked-entity.ts` fetches the latest location for one tracked entity and builds the new state.
 - `src/runtime/build-tracked-entity-state.ts` converts the latest location into persisted state.
 - `src/runtime/diff-tracked-entity-state.ts` compares old and new state.
-- `src/runtime/evaluate-geofence-rules.ts` evaluates geofence transitions and hysteresis.
+- `src/runtime/evaluate-geofence-rules.ts` evaluates geofence transitions.
 - `src/runtime/execute-shell-action.ts` runs shell actions.
 
 ## Execution Flow
@@ -55,9 +55,8 @@ The implementation is split into three layers:
 - Rules are evaluated only when coordinates change.
 - Circle geofences resolve their center from `centerLocationId`.
 - Distances are computed in meters.
-- Hysteresis is applied as a boundary buffer:
-  - `enter`: previous distance must be greater than `radius + hysteresis`, current distance must be less than or equal to `radius`
-  - `exit`: previous distance must be less than or equal to `radius`, current distance must be greater than `radius + hysteresis`
+- `enter`: previous distance must be greater than `radius`, current distance must be less than or equal to `radius`
+- `exit`: previous distance must be less than or equal to `radius`, current distance must be greater than `radius`
 
 ## Data Layout
 

@@ -67,7 +67,6 @@ export function evaluateGeofenceRules(
           previousDistanceMeters,
           currentDistanceMeters,
           geofence.value.radiusMeters,
-          rule.trigger.hysteresisMeters,
         );
 
         if (triggered) {
@@ -111,19 +110,12 @@ function isRuleTriggered(
   previousDistanceMeters: number,
   currentDistanceMeters: number,
   radiusMeters: number,
-  hysteresisMeters: number,
 ): boolean {
   switch (eventType) {
     case "enter":
-      return (
-        previousDistanceMeters > radiusMeters + hysteresisMeters &&
-        currentDistanceMeters <= radiusMeters
-      );
+      return previousDistanceMeters > radiusMeters && currentDistanceMeters <= radiusMeters;
     case "exit":
-      return (
-        previousDistanceMeters <= radiusMeters &&
-        currentDistanceMeters > radiusMeters + hysteresisMeters
-      );
+      return previousDistanceMeters <= radiusMeters && currentDistanceMeters > radiusMeters;
     default:
       return false;
   }

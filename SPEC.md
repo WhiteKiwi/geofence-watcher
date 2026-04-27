@@ -20,7 +20,6 @@ The project needs a small command-line tool that:
 - Support one geofence shape initially: `circle`.
 - Support one action type initially: `shell`.
 - Detect `enter` and `exit` transitions reliably.
-- Avoid repeated triggers near the geofence boundary by using hysteresis.
 - Persist data locally so the tool can be run by cron or `launchd`.
 
 ## Non-Goals
@@ -89,7 +88,6 @@ For `type: circle`:
 - `geofenceId`: Geofence id.
 - `actionId`: Action id to run.
 - `trigger.eventType`: Transition type. Allowed values: `enter`, `exit`.
-- `trigger.hysteresisMeters`: Additional buffer distance used to reduce boundary chatter.
 
 ## CLI Requirements
 
@@ -147,8 +145,8 @@ The tool must expose these command groups:
 ## Behavioral Requirements
 
 - A rule only evaluates when tracked entity coordinates change.
-- `enter` should fire when the previous distance is outside the geofence plus hysteresis and the new distance is inside the geofence.
-- `exit` should fire when the previous distance is inside the geofence and the new distance is outside the geofence plus hysteresis.
+- `enter` should fire when a tracked entity moves from outside a geofence to inside it.
+- `exit` should fire when a tracked entity moves from inside a geofence to outside it.
 - Missing geofences or missing center locations are runtime errors.
 - Unsupported geofence types are runtime errors.
 - Unsupported tracked entity types are runtime errors.

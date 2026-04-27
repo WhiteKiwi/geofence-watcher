@@ -7,7 +7,7 @@
 - Stores tracked entities, states, locations, geofences, rules, and actions locally.
 - Supports Beacon as the initial tracked entity source.
 - Supports circular geofences and shell actions.
-- Evaluates `enter` and `exit` transitions with hysteresis to reduce boundary chatter.
+- Evaluates `enter` and `exit` transitions based on geofence boundary crossings.
 
 ## Quick Start
 

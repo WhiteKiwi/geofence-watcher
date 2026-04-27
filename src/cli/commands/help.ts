@@ -34,7 +34,7 @@ export function printHelp(): void {
   geofence-watcher geofences delete <id>
 
   geofence-watcher rules list
-  geofence-watcher rules add --geofence-id <geofenceId> --action-id <actionId> --event-type <enter|exit> --hysteresis-meters <meters>
+  geofence-watcher rules add --geofence-id <geofenceId> --action-id <actionId> --event-type <enter|exit>
   geofence-watcher rules delete <id>
 
   geofence-watcher actions list
@@ -73,7 +73,7 @@ export function printCommandHelp(resource: HelpResource): void {
     case "rules":
       console.log(`Usage:
   geofence-watcher rules list
-  geofence-watcher rules add --geofence-id <geofenceId> --action-id <actionId> --event-type <enter|exit> --hysteresis-meters <meters>
+  geofence-watcher rules add --geofence-id <geofenceId> --action-id <actionId> --event-type <enter|exit>
   geofence-watcher rules delete <id>`);
       return;
     case "actions":
