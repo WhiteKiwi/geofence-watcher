@@ -44,6 +44,7 @@ For `type: beacon`:
 - `value.apiSecret`: Beacon server API secret.
 - `value.apiUrl`: Beacon server API URL.
 - `value.id`: Beacon server id used to fetch the latest location.
+- Existing stored tracked entities using `value.apiKey` are migrated to `value.apiSecret` on load.
 
 ### Tracked Entity State
 

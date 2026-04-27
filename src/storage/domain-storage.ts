@@ -10,6 +10,7 @@ import type {
   TrackedEntityState,
   TrackedEntity,
 } from "../domain/index.js";
+import { migrateBeaconTrackedEntity } from "../domain/tracked-entity.js";
 import { JsonFileCollection } from "./json-file-collection.js";
 
 export type DomainStorage = {
@@ -36,6 +37,7 @@ export function createDomainStorage(
     trackedEntities: createCollection<TrackedEntity>(
       dataDirectoryUrl,
       "tracked-entities.json",
+      { normalize: normalizeTrackedEntities },
     ),
     trackedEntityStates: createCollection<TrackedEntityState>(
       dataDirectoryUrl,
@@ -51,8 +53,11 @@ export function createDomainStorage(
 function createCollection<T extends { id: string }>(
   dataDirectoryUrl: URL,
   fileName: string,
+  options: {
+    normalize?: (items: unknown[]) => { items: T[]; changed: boolean };
+  } = {},
 ): JsonFileCollection<T> {
-  return new JsonFileCollection<T>(fileURLToPath(new URL(fileName, dataDirectoryUrl)));
+  return new JsonFileCollection<T>(fileURLToPath(new URL(fileName, dataDirectoryUrl)), options);
 }
 
 function buildDefaultDataDirectoryUrl(): URL {
@@ -60,4 +65,37 @@ function buildDefaultDataDirectoryUrl(): URL {
   const dataDirectoryPath = join(xdgDataHome, "geofence-watcher", ".data");
 
   return pathToFileURL(`${dataDirectoryPath}/`);
+}
+
+function normalizeTrackedEntities(
+  items: unknown[],
+): { items: TrackedEntity[]; changed: boolean } {
+  let changed = false;
+  const nextItems = items.map((item) => {
+    if (hasLegacyBeaconApiKey(item)) {
+      changed = true;
+    }
+
+    return migrateBeaconTrackedEntity(item);
+  });
+
+  return {
+    items: nextItems,
+    changed,
+  };
+}
+
+function hasLegacyBeaconApiKey(item: unknown): boolean {
+  if (item === null || typeof item !== "object") {
+    return false;
+  }
+
+  const trackedEntity = item as Record<string, unknown>;
+  const value = trackedEntity.value;
+
+  if (value === null || typeof value !== "object") {
+    return false;
+  }
+
+  return Object.prototype.hasOwnProperty.call(value, "apiKey");
 }

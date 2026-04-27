@@ -41,6 +41,7 @@ The implementation is split into three layers:
 
 - Use `apiSecret` as the canonical field name for Beacon credentials.
 - Expose `--api-secret` in the CLI and usage text.
+- Migrate existing tracked entity storage files by converting legacy `apiKey` fields to `apiSecret` on load and rewriting the file.
 
 ## Execution Flow
 

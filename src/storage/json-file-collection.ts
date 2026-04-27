@@ -6,7 +6,12 @@ export type Identifiable = {
 };
 
 export class JsonFileCollection<T extends Identifiable> {
-  constructor(private readonly filePath: string) {}
+  constructor(
+    private readonly filePath: string,
+    private readonly options: {
+      normalize?: (items: unknown[]) => { items: T[]; changed: boolean };
+    } = {},
+  ) {}
 
   async list(): Promise<T[]> {
     return this.readAll();
@@ -65,6 +70,15 @@ export class JsonFileCollection<T extends Identifiable> {
 
       if (!Array.isArray(parsed)) {
         throw new Error(`Expected JSON array: ${this.filePath}`);
+      }
+
+      const normalizedResult = this.options.normalize?.(parsed);
+      if (normalizedResult) {
+        if (normalizedResult.changed) {
+          await this.writeAll(normalizedResult.items);
+        }
+
+        return normalizedResult.items;
       }
 
       return parsed as T[];
