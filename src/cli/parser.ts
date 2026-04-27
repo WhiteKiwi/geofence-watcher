@@ -1,4 +1,6 @@
-export type Options = Record<string, string>;
+const FLAG_OPTIONS = new Set(["debug"]);
+
+export type Options = Record<string, string | boolean>;
 
 export type ParsedCommand = {
   resource: string | undefined;
@@ -8,9 +10,28 @@ export type ParsedCommand = {
 };
 
 export function parseCommand(argv: string[]): ParsedCommand {
-  const [resource, second, ...rest] = argv;
   const args: string[] = [];
   const options: Options = {};
+  let index = 0;
+
+  while (index < argv.length) {
+    const value = argv[index];
+
+    if (!value?.startsWith("--")) {
+      break;
+    }
+
+    const optionName = value.slice(2);
+
+    if (!FLAG_OPTIONS.has(optionName)) {
+      break;
+    }
+
+    options[optionName] = true;
+    index += 1;
+  }
+
+  const [resource, second, ...rest] = argv.slice(index);
   const helpRequested = second === "help" || second === "-h" || second === "--help";
   const command = helpRequested ? "help" : second?.startsWith("--") ? undefined : second;
   const optionArgs = helpRequested ? [] : second?.startsWith("--") ? [second, ...rest] : rest;
@@ -20,9 +41,19 @@ export function parseCommand(argv: string[]): ParsedCommand {
 
     if (value?.startsWith("--")) {
       const optionName = value.slice(2);
+
+      if (!optionName) {
+        throw new Error(`Missing option name: ${value}`);
+      }
+
+      if (FLAG_OPTIONS.has(optionName)) {
+        options[optionName] = true;
+        continue;
+      }
+
       const optionValue = optionArgs[index + 1];
 
-      if (!optionName || !optionValue || optionValue.startsWith("--")) {
+      if (!optionValue || optionValue.startsWith("--")) {
         throw new Error(`Missing value for option: ${value}`);
       }
 

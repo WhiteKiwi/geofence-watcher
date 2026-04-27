@@ -6,6 +6,7 @@ import type {
   Location,
   TrackedEntityState,
 } from "../domain/index.js";
+import { debug } from "../cli/logger.js";
 import { distanceMeters } from "./distance.js";
 import type { TrackedEntityStateDiff } from "./diff-tracked-entity-state.js";
 
@@ -32,6 +33,9 @@ export function evaluateGeofenceRules(
   rules: GeofenceRule[],
 ): EvaluateGeofenceRulesResult {
   if (previousState === undefined || !stateDiff.coordinatesChanged) {
+    debug("evaluate-geofence-rules: skipped", {
+      reason: previousState === undefined ? "missing-previous-state" : "coordinates-unchanged",
+    });
     return {
       matchedRules: [],
     };
@@ -68,6 +72,16 @@ export function evaluateGeofenceRules(
           currentDistanceMeters,
           geofence.value.radiusMeters,
         );
+        debug("evaluate-geofence-rules: evaluated rule", {
+          ruleId: rule.id,
+          geofenceId: rule.geofenceId,
+          actionId: rule.actionId,
+          eventType: rule.trigger.eventType,
+          previousDistanceMeters,
+          currentDistanceMeters,
+          radiusMeters: geofence.value.radiusMeters,
+          triggered,
+        });
 
         if (triggered) {
           matchedRules.push({
@@ -86,6 +100,10 @@ export function evaluateGeofenceRules(
         throw new Error(`Unsupported geofence type: ${(geofence as { type: string }).type}`);
     }
   }
+
+  debug("evaluate-geofence-rules: matched rules", {
+    matchedRules,
+  });
 
   return {
     matchedRules,

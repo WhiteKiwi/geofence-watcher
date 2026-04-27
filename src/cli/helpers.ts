@@ -7,7 +7,7 @@ export function isHelpCommand(command: string | undefined): boolean {
 export function requiredOption(options: Options, name: string): string {
   const value = options[name];
 
-  if (!value) {
+  if (typeof value !== "string" || value.length === 0) {
     throw new Error(`Missing required option: --${name}`);
   }
 

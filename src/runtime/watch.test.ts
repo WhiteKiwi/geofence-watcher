@@ -5,6 +5,7 @@ import { runWatch, type WatchResult } from "./watch.js";
 import type { DomainStorage } from "../storage/index.js";
 import type { JsonFileCollection } from "../storage/index.js";
 import type { Action, Geofence, GeofenceRule, Location, TrackedEntity, TrackedEntityState } from "../domain/index.js";
+import { setDebugEnabled } from "../cli/logger.js";
 
 test("runWatch continues when one tracked entity fetch fails", async () => {
   const previousFetch = globalThis.fetch;
@@ -98,6 +99,7 @@ test("runWatch continues when one tracked entity fetch fails", async () => {
   };
 
   try {
+    setDebugEnabled(false);
     const result: WatchResult = await runWatch(storage);
 
     assert.equal(result.processedTrackedEntities.length, 2);
@@ -106,6 +108,83 @@ test("runWatch continues when one tracked entity fetch fails", async () => {
     assert.equal(upsertedStates.length, 1);
     assert.equal(upsertedStates[0].id, "success");
   } finally {
+    setDebugEnabled(false);
+    globalThis.fetch = previousFetch;
+  }
+});
+
+test("runWatch emits debug logs only when enabled", async () => {
+  const previousFetch = globalThis.fetch;
+  const originalError = console.error;
+  const output: string[] = [];
+
+  globalThis.fetch = async () => {
+    return {
+      ok: true,
+      status: 200,
+      statusText: "OK",
+      json: async () => ({
+        id: "latest-1",
+        latitude: 37.1,
+        longitude: 127.1,
+        timestamp: "2026-04-26T00:10:00.000Z",
+      }),
+    } as Response;
+  };
+
+  console.error = (...args: unknown[]) => {
+    output.push(args.map(String).join(" "));
+  };
+
+  const storage: DomainStorage = {
+    trackedEntities: collectionStub<TrackedEntity>({
+      list: async () => trackedEntities,
+      get: async () => undefined,
+      add: async () => undefined,
+      upsert: async () => undefined,
+      delete: async () => false,
+      replaceAll: async () => undefined,
+    }),
+    trackedEntityStates: collectionStub<TrackedEntityState>({
+      list: async () => [],
+      get: async () => undefined,
+      add: async () => undefined,
+      upsert: async () => undefined,
+      delete: async () => false,
+      replaceAll: async () => undefined,
+    }),
+    actions: collectionStub<Action>(emptyCollection()),
+    locations: collectionStub<Location>(emptyCollection()),
+    geofences: collectionStub<Geofence>(emptyCollection()),
+    rules: collectionStub<GeofenceRule>(emptyCollection()),
+  };
+
+  const trackedEntities: TrackedEntity[] = [
+    {
+      id: "entity-1",
+      name: "Beacon",
+      type: "beacon",
+      value: {
+        apiUrl: "https://example.com/latest",
+        apiKey: "key",
+        id: "beacon-1",
+      },
+    },
+  ];
+
+  try {
+    setDebugEnabled(false);
+    await runWatch(storage);
+    assert.equal(output.length, 0);
+
+    setDebugEnabled(true);
+    await runWatch(storage);
+    assert.ok(output.length > 0);
+    assert.match(output.join("\n"), /watch: started/);
+    assert.match(output.join("\n"), /watch: processed tracked entity successfully/);
+  } finally {
+    setDebugEnabled(false);
+    console.error = originalError;
     globalThis.fetch = previousFetch;
   }
 });

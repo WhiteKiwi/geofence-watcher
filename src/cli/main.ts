@@ -8,12 +8,20 @@ import { handleRules } from "./commands/rules.js";
 import { handleWatch } from "./commands/watch.js";
 import { handleTrackedEntityStates } from "./commands/tracked-entity-states.js";
 import { handleTrackedEntities } from "./commands/tracked-entities.js";
+import { debug, setDebugEnabled } from "./logger.js";
 import { parseCommand } from "./parser.js";
 
 const storage = createDomainStorage();
 
 async function main(): Promise<void> {
   const parsedCommand = parseCommand(process.argv.slice(2));
+  setDebugEnabled(parsedCommand.options.debug === true);
+  debug("main: dispatching command", {
+    resource: parsedCommand.resource,
+    command: parsedCommand.command,
+    args: parsedCommand.args,
+    options: parsedCommand.options,
+  });
 
   switch (parsedCommand.resource) {
     case "tracked-entities":

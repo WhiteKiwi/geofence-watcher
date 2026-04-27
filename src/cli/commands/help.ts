@@ -10,6 +10,8 @@ type HelpResource =
 
 export function printHelp(): void {
   console.log(`Usage:
+  geofence-watcher --debug <command>
+
   geofence-watcher tracked-entities help
   geofence-watcher tracked-entity-states help
   geofence-watcher locations help
@@ -42,7 +44,7 @@ export function printHelp(): void {
   geofence-watcher actions run <id>
   geofence-watcher actions delete <id>
 
-  geofence-watcher watch
+  geofence-watcher watch --debug
   geofence-watcher install-cron --every 5m`);
 }
 
@@ -85,7 +87,7 @@ export function printCommandHelp(resource: HelpResource): void {
       return;
     case "watch":
       console.log(`Usage:
-  geofence-watcher watch`);
+  geofence-watcher watch --debug`);
       return;
     case "install-cron":
       console.log(`Usage:

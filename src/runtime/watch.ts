@@ -6,6 +6,7 @@ import {
   type GeofenceRuleMatch,
 } from "./evaluate-geofence-rules.js";
 import { executeShellAction, type ExecuteShellActionResult } from "./execute-shell-action.js";
+import { debug } from "../cli/logger.js";
 
 export type WatchEntityResult =
   | {
@@ -28,6 +29,10 @@ export type WatchResult = {
 };
 
 export async function runWatch(storage: DomainStorage): Promise<WatchResult> {
+  const watchStartedAt = new Date().toISOString();
+  debug("watch: started", {
+    watchStartedAt,
+  });
   const [trackedEntities, trackedEntityStates, locations, geofences, rules, actions] = await Promise.all([
     storage.trackedEntities.list(),
     storage.trackedEntityStates.list(),
@@ -36,6 +41,14 @@ export async function runWatch(storage: DomainStorage): Promise<WatchResult> {
     storage.rules.list(),
     storage.actions.list(),
   ]);
+  debug("watch: loaded collections", {
+    trackedEntities: trackedEntities.length,
+    trackedEntityStates: trackedEntityStates.length,
+    locations: locations.length,
+    geofences: geofences.length,
+    rules: rules.length,
+    actions: actions.length,
+  });
 
   const trackedEntityStatesById = new Map(
     trackedEntityStates.map((trackedEntityState) => [trackedEntityState.id, trackedEntityState]),
@@ -46,6 +59,9 @@ export async function runWatch(storage: DomainStorage): Promise<WatchResult> {
 
   for (const trackedEntity of trackedEntities) {
     try {
+      debug("watch: processing tracked entity", {
+        trackedEntityId: trackedEntity.id,
+      });
       const trackedEntityResult = await processTrackedEntity(
         trackedEntity,
         trackedEntityStatesById.get(trackedEntity.id),
@@ -63,6 +79,11 @@ export async function runWatch(storage: DomainStorage): Promise<WatchResult> {
         actions,
         evaluation.matchedRules,
       );
+      debug("watch: selected actions", {
+        trackedEntityId: trackedEntity.id,
+        matchedRules: evaluation.matchedRules,
+        selectedActions: actionsToExecute.map((action) => action.id),
+      });
       const executedActions: ExecuteShellActionResult[] = [];
 
       for (const action of actionsToExecute) {
@@ -70,9 +91,21 @@ export async function runWatch(storage: DomainStorage): Promise<WatchResult> {
           continue;
         }
 
-        executedActions.push(await executeShellAction(action));
+        const executedAction = await executeShellAction(action);
+        debug("watch: action execution result", {
+          trackedEntityId: trackedEntity.id,
+          actionId: action.id,
+          result: executedAction,
+        });
+        executedActions.push(executedAction);
       }
 
+      debug("watch: saving tracked entity state", {
+        trackedEntityId: trackedEntityResult.trackedEntityId,
+        previousState: trackedEntityResult.previousState,
+        nextState: trackedEntityResult.nextState,
+        stateDiff: trackedEntityResult.stateDiff,
+      });
       await storage.trackedEntityStates.upsert(trackedEntityResult.nextState);
 
       result.push({
@@ -83,7 +116,14 @@ export async function runWatch(storage: DomainStorage): Promise<WatchResult> {
         matchedRules: evaluation.matchedRules,
         executedActions,
       });
+      debug("watch: processed tracked entity successfully", {
+        trackedEntityId: trackedEntity.id,
+      });
     } catch (error) {
+      debug("watch: processed tracked entity with error", {
+        trackedEntityId: trackedEntity.id,
+        error: error instanceof Error ? error.message : String(error),
+      });
       result.push({
         trackedEntityId: trackedEntity.id,
         status: "error",
@@ -92,6 +132,11 @@ export async function runWatch(storage: DomainStorage): Promise<WatchResult> {
       });
     }
   }
+
+  debug("watch: finished", {
+    watchStartedAt,
+    processedTrackedEntities: result.length,
+  });
 
   return {
     processedTrackedEntities: result,
